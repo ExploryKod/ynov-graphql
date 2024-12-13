@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Social Network - Profile</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Mini Social Network</h1>
+    <nav>
+      <a href="/graphql">Aller à graphiQl</a>
+      <a href="/">Home</a>
+      <a href="profile">Profile</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="profile">
+      <h2>User Profile</h2>
+      <div id="profile-info">
+      </div>
+    </section>
+
+    <section id="posts">
+      <h2>User Posts</h2>
+      <div id="post-list">
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Mini Social Network</p>
+  </footer>
+
+  <script>
+    const API_URL = 'http://localhost:4000/graphql';
+
+    async function fetchProfile(userId) {
+      const query = `
+        query ($userId: ID!) {
+          profile(userId: $userId) {
+            bio
+            location
+            website
+            profilePicture
+            coverPicture
+            socialLinks {
+              platform
+              url
+            }
+            user {
+              username
+              firstName
+              lastName
+              email
+            }
+          }
+          userPosts(userId: $userId) {
+            id
+            title
+            content
+            createdAt
+          }
+        }
+      `;
+
+      const variables = { userId };
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, variables })
+      });
+
+      const { data } = await response.json();
+      return data;
+    }
+
+    function renderProfile(profile) {
+      const profileDiv = document.getElementById('profile-info');
+      profileDiv.innerHTML = `
+        <img src="${profile.profilePicture || 'default-profile.png'}" alt="Profile Picture">
+        <h3>${profile.user.firstName} ${profile.user.lastName}</h3>
+        <p><strong>Username:</strong> ${profile.user.username}</p>
+        <p><strong>Email:</strong> ${profile.user.email}</p>
+        <p><strong>Bio:</strong> ${profile.bio}</p>
+        <p><strong>Location:</strong> ${profile.location}</p>
+        <p><strong>Website:</strong> <a href="${profile.website}" target="_blank">${profile.website}</a></p>
+        <p><strong>Social Links:</strong></p>
+        <ul>
+          ${profile.socialLinks.map(link => `<li><a href="${link.url}" target="_blank">${link.platform}</a></li>`).join('')}
+        </ul>
+      `;
+    }
+
+    function renderPosts(posts) {
+      const postsDiv = document.getElementById('post-list');
+      postsDiv.innerHTML = posts.map(post => `
+        <div class="post">
+          <h3>${post.title}</h3>
+          <p>${post.content}</p>
+          <p><small>Posted on: ${new Date(post.createdAt).toLocaleDateString()}</small></p>
+        </div>
+      `).join('');
+    }
+
+    const userId = '0';
+    fetchProfile(userId).then(data => {
+      renderProfile(data.profile);
+      renderPosts(data.userPosts);
+    });
+  </script>
+</body>
+</html>
