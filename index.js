@@ -132,7 +132,7 @@ const schema = buildSchema(`
   }
 `);
 
-// Simulated in-memory database
+
 const users = [];
 const profiles = [];
 const posts = [];
@@ -140,9 +140,9 @@ let userIdCounter = 0;
 let postIdCounter = 0;
 let profileIdCounter = 0;
 
-// Root resolver
+
 const root = {
-  // User Queries
+
   user: ({ id }) => {
     const user = users.find(u => u.id === id);
     if (user) {
