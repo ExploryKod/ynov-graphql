@@ -133,12 +133,12 @@ const schema = buildSchema(`
 `);
 
 
-const users = [];
-const profiles = [];
-const posts = [];
-let userIdCounter = 0;
-let postIdCounter = 0;
-let profileIdCounter = 0;
+const users = ["Gustave", "John"];
+const profiles = ["Gustave", "John"];
+const posts = ["posta", "postb", "postc", "postd", "post"];
+let userIdCounter = 2;
+let postIdCounter = 6;
+let profileIdCounter = 3;
 
 
 const root = {
@@ -289,6 +289,17 @@ app.use('/graphql', graphqlHTTP({
   rootValue: root,
   graphiql: true,
 }));
+
+const path = require('path');
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
+app.get('/profile', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/profile.html'));
+});
+
 
 // Server launch
 const PORT = process.env.PORT || 4000;
