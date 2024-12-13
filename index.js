@@ -269,7 +269,7 @@ const root = {
     return true;
   },
 
-  // Profile Mutations
+  
   updateProfile: ({ userId, input }) => {
     const profileIndex = profiles.findIndex(p => p.user.id === userId);
     if (profileIndex === -1) return null;
@@ -282,7 +282,7 @@ const root = {
   }
 };
 
-// Express and GraphQL setup
+
 const app = express();
 app.use('/graphql', graphqlHTTP({
   schema: schema,
@@ -300,9 +300,13 @@ app.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/profile.html'));
 });
 
+app.get('/graphql', (req, res) => {
+  res.redirect('/graphql'); // This will redirect to the GraphQL playground
+});
+
 
 // Server launch
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`GraphQL Server running on http://localhost:${PORT}/graphql`));
+app.listen(PORT, () => console.log(`GraphQL Server running on http://localhost:${PORT}`));
 
 module.exports = { app, root }; // For potential testing
